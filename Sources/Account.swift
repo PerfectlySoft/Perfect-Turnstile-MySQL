@@ -67,7 +67,7 @@ open class AuthAccount : MySQLStORM, Account {
 	func get(_ un: String, _ pw: String) throws -> AuthAccount {
 		let cursor = StORMCursor(limit: 1, offset: 0)
 		do {
-			try select(whereclause: "username = $1", params: [un], orderby: [], cursor: cursor)
+			try select(whereclause: "username = ?", params: [un], orderby: [], cursor: cursor)
 			if self.results.rows.count == 0 {
 				throw StORMError.noRecordFound
 			}
@@ -85,7 +85,7 @@ open class AuthAccount : MySQLStORM, Account {
 	}
 	func exists(_ un: String) -> Bool {
 		do {
-			try select(whereclause: "username = $1", params: [un], orderby: [], cursor: StORMCursor(limit: 1, offset: 0))
+			try select(whereclause: "username = ?", params: [un], orderby: [], cursor: StORMCursor(limit: 1, offset: 0))
 			if results.rows.count == 1 {
 				return true
 			} else {
