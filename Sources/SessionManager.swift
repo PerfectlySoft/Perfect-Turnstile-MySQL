@@ -13,7 +13,8 @@ import MySQLStORM
 import TurnstilePerfect
 
 /// Extension to PerfectSessionManager - manages sessions via PostgresSQL
-extension PerfectSessionManager {
+open class PerfectSessionManager: SessionManager {
+	public let random: Random = URandom()
 
 	/// Creates a session for a given Subject object and returns the identifier.
 	public func createSession(account: Account) -> String {
