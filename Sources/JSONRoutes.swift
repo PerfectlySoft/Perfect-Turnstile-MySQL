@@ -17,6 +17,7 @@ import Turnstile
 import TurnstileCrypto
 import TurnstileWeb
 
+/// Defines and returns the JSON API Authentication routes
 public func makeJSONAuthRoutes(_ root: String = "/api/v1") -> Routes {
 	var routes = Routes()
 

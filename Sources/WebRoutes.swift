@@ -9,6 +9,7 @@
 import PerfectLib
 import PerfectHTTP
 
+/// Defines and returns the Web Authentication routes
 public func makeWebAuthRoutes() -> Routes {
 	var routes = Routes()
 

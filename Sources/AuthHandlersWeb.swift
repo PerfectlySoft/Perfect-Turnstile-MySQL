@@ -15,10 +15,12 @@ import Turnstile
 import TurnstileCrypto
 import TurnstileWeb
 
+/// The class that holds all the Web-oriented Authentication handlers
 public class AuthHandlersWeb {
 	/* =================================================================================================================
 	Index
 	================================================================================================================= */
+	/// Handles the GET request for an "index" route
 	open static func indexHandlerGet(request: HTTPRequest, _ response: HTTPResponse) {
 		let context: [String : Any] = [
 			"accountID": request.user.authDetails?.account.uniqueID ?? "",
@@ -35,11 +37,13 @@ public class AuthHandlersWeb {
 	/* =================================================================================================================
 	Login
 	================================================================================================================= */
+	/// Handles the GET request for a "login" route
 	open static func loginHandlerGET(request: HTTPRequest, _ response: HTTPResponse) {
 		response.render(template: "login")
 	}
 
 
+	/// Handles the POST request for a "login" route
 	open static func loginHandlerPOST(request: HTTPRequest, _ response: HTTPResponse) {
 		guard let username = request.param(name: "username"),
 			let password = request.param(name: "password") else {
@@ -64,9 +68,11 @@ public class AuthHandlersWeb {
 	/* =================================================================================================================
 	Register
 	================================================================================================================= */
+	/// Handles the GET request for a "register" route
 	open static func registerHandlerGET(request: HTTPRequest, _ response: HTTPResponse) {
 		response.render(template: "register")
 	}
+	/// Handles the POST request for a "register" route
 	open static func registerHandlerPOST(request: HTTPRequest, _ response: HTTPResponse) {
 		guard let username = request.param(name: "username"),
 			let password = request.param(name: "password") else {
@@ -95,6 +101,7 @@ public class AuthHandlersWeb {
 	/* =================================================================================================================
 	Logout
 	================================================================================================================= */
+	/// Handles the request for a "logout" route
 	open static func logoutHandler(request: HTTPRequest, _ response: HTTPResponse) {
 		response.addCookie(HTTPCookie(name: "TurnstileSession",
 									value: "\(request.user.authDetails?.sessionID)",

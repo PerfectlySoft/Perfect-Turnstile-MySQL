@@ -12,7 +12,7 @@ import Turnstile
 import MySQLStORM
 import TurnstilePerfect
 
-/// Extension to PerfectSessionManager - manages sessions via PostgresSQL
+/// PerfectSessionManager manages sessions via PostgresSQL
 open class PerfectSessionManager: SessionManager {
 	public let random: Random = URandom()
 

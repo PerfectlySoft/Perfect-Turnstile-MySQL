@@ -19,15 +19,17 @@ import TurnstileCrypto
 import TurnstileWeb
 
 
+/// public var that houses the Token object
 public var tokenStore: AccessTokenStore?
 
+/// The class that holds all the JSON Authentication handlers
 public class AuthHandlersJSON {
 
 
 	/* =================================================================================================================
 	Login
 	================================================================================================================= */
-
+	/// JSON Login action (POST)
 	open static func loginHandlerPOST(request: HTTPRequest, _ response: HTTPResponse) {
 		response.setHeader(.contentType, value: "application/json")
 
@@ -72,9 +74,7 @@ public class AuthHandlersJSON {
 	/* =================================================================================================================
 	Register
 	================================================================================================================= */
-//	open static func registerHandlerGET(request: HTTPRequest, _ response: HTTPResponse) {
-//		response.render(template: "register")
-//	}
+	/// JSON Register action (POST)
 	open static func registerHandlerPOST(request: HTTPRequest, _ response: HTTPResponse) {
 		response.setHeader(.contentType, value: "application/json")
 		var resp = [String: String]()
@@ -122,6 +122,7 @@ public class AuthHandlersJSON {
 	/* =================================================================================================================
 	Logout
 	================================================================================================================= */
+	/// JSON Logout action
 	open static func logoutHandler(request: HTTPRequest, _ response: HTTPResponse) {
 		response.setHeader(.contentType, value: "application/json")
 		var resp = [String: String]()
@@ -240,6 +241,7 @@ public class AuthHandlersJSON {
 
 
 
+	/// Allows a simple route handler for checking if the user is still logged in.
 	open static func testHandler(request: HTTPRequest, _ response: HTTPResponse) {
 		response.setHeader(.contentType, value: "application/json")
 
