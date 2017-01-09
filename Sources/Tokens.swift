@@ -91,4 +91,13 @@ open class AccessTokenStore : MySQLStORM {
 		}
 		return token
 	}
+    
+    /// Destroy the token, after logout, by deleting it from token store
+    public func destroy() {
+        do {
+            try delete(token, idName: "token")
+        } catch {
+            print(error)
+        }
+    }
 }

@@ -28,6 +28,9 @@ open class AuthAccount : MySQLStORM, Account {
 
 	/// Stored Google ID when logging in with Google
 	public var googleID: String = ""
+    
+    /// Stored LinkedIn ID when logging in with Google
+    public var linkedInID: String = ""
 
 	/// Optional first name
 	public var firstname: String = ""
@@ -41,9 +44,11 @@ open class AuthAccount : MySQLStORM, Account {
 	/// Internal container variable for the current Token object
 	public var internal_token: AccessTokenStore = AccessTokenStore()
 
-	/// The table to store the data
+    /// The table to store the data
+    public var tableName: String = "users"
+    
 	override open func table() -> String {
-		return "users"
+		return tableName
 	}
 
 	/// Shortcut to store the id
@@ -58,6 +63,7 @@ open class AuthAccount : MySQLStORM, Account {
 		password	= this.data["password"] as? String ?? ""
 		facebookID	= this.data["facebookID"] as? String ?? ""
 		googleID	= this.data["googleID"] as? String ?? ""
+        linkedInID	= this.data["linkedInID"] as? String ?? ""
 		firstname	= this.data["firstname"] as? String ?? ""
 		lastname	= this.data["lastname"] as? String ?? ""
 		email		= this.data["email"] as? String ?? ""

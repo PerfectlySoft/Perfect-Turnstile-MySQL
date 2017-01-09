@@ -127,6 +127,9 @@ public class AuthHandlersJSON {
 		response.setHeader(.contentType, value: "application/json")
 		var resp = [String: String]()
 
+        // Destroy the token and clean the token store
+        tokenStore?.destroy()
+        
 		request.user.logout()
 		resp["error"] = "none"
 		resp["logout"] = "complete"
