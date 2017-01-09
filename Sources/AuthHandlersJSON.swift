@@ -128,7 +128,11 @@ public class AuthHandlersJSON {
 		var resp = [String: String]()
 
         // Destroy the token and clean the token store
-        tokenStore?.destroy()
+        if let headerValue = request.header(HTTPRequestHeader.Name.authorization) {
+            if let res = tokenStore?.destroy(headerValue), !res {
+                Log.warning(message: "Couldn't delete token from the store")
+            }
+        }
         
 		request.user.logout()
 		resp["error"] = "none"

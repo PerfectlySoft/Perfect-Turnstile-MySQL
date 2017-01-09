@@ -45,10 +45,8 @@ open class AuthAccount : MySQLStORM, Account {
 	public var internal_token: AccessTokenStore = AccessTokenStore()
 
     /// The table to store the data
-    public var tableName: String = "users"
-    
 	override open func table() -> String {
-		return tableName
+		return "people"
 	}
 
 	/// Shortcut to store the id
