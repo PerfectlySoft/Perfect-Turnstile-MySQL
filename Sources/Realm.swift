@@ -40,7 +40,7 @@ public class AuthRealm : Realm {
 	public func authenticate(credentials: AccessToken) throws -> Account {
 		let account = AuthAccount()
 		let token = AccessTokenStore()
-		print(credentials.string)
+//		print(credentials.string)
 		do {
 			try token.get(credentials.string)
 			if token.check() == false {
