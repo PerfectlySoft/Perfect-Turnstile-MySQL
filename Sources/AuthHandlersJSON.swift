@@ -55,6 +55,12 @@ public class AuthHandlersJSON {
 			resp["error"] = "none"
 			resp["login"] = "ok"
 			resp["token"] = token
+            
+            if let authAccount = request.user.authDetails?.account as? AuthAccount {
+                resp["xmpp_un"] = authAccount._xmpp_un
+                resp["xmpp_pw"] = authAccount._xmpp_pw
+            }
+            
 		} catch {
 			resp["error"] = "Invalid username or password"
 		}
