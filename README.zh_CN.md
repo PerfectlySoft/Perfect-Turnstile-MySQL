@@ -1,4 +1,4 @@
-# Perfect Turnstile 与 PostgreSQL 集成用户身份验证[English](README.md)
+# Perfect Turnstile 与 MySQL 集成用户身份验证[English](README.md)
 
 <p align="center">
     <a href="http://perfect.org/get-involved.html" target="_blank">
