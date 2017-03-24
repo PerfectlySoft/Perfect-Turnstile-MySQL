@@ -48,8 +48,8 @@
 
 ``` swift
 .Package(
-	url: "https://github.com/PerfectlySoft/Perfect-Turnstile-PostgreSQL.git",
-	majorVersion: 0, minor: 0
+	url: "https://github.com/PerfectlySoft/Perfect-Turnstile-MySQL.git",
+	majorVersion: 0
 	)
 ```
 
