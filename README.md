@@ -47,10 +47,7 @@ This project integrates Stormpath's Turnstile authentication system into a singl
 In your Package.swift file, include the following line inside the dependancy array:
 
 ``` swift
-.Package(
-	url: "https://github.com/PerfectlySoft/Perfect-Turnstile-PostgreSQL.git",
-	majorVersion: 0, minor: 0
-	)
+.Package(url: "https://github.com/PerfectlySoft/Perfect-Turnstile-MySQL.git",majorVersion: 0)
 ```
 
 ## macOS
