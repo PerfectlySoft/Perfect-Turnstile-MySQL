@@ -91,4 +91,18 @@ open class AccessTokenStore : MySQLStORM {
 		}
 		return token
 	}
+    
+    /// Destroy the token, after logout, by deleting it from token store
+    public func destroy(_ headerValue: String) -> Bool {
+        
+        guard let range = headerValue.range(of: "Bearer ") else { return false }
+        
+        let token = headerValue.substring(from: range.upperBound)
+        do {
+            try delete(token, idName: "token")
+        } catch {
+            print(error)
+        }
+        return true
+    }
 }

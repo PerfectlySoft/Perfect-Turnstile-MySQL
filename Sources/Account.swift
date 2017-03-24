@@ -28,6 +28,9 @@ open class AuthAccount : MySQLStORM, Account {
 
 	/// Stored Google ID when logging in with Google
 	public var googleID: String = ""
+    
+    /// Stored LinkedIn ID when logging in with Google
+    public var linkedInID: String = ""
 
 	/// Optional first name
 	public var firstname: String = ""
@@ -40,10 +43,16 @@ open class AuthAccount : MySQLStORM, Account {
 
 	/// Internal container variable for the current Token object
 	public var internal_token: AccessTokenStore = AccessTokenStore()
+    
+    /// xmpp username
+    public var _xmpp_un: String = ""
+    
+    /// xmpp password
+    public var _xmpp_pw: String = ""
 
-	/// The table to store the data
+    /// The table to store the data
 	override open func table() -> String {
-		return "users"
+		return "people"
 	}
 
 	/// Shortcut to store the id
@@ -58,9 +67,12 @@ open class AuthAccount : MySQLStORM, Account {
 		password	= this.data["password"] as? String ?? ""
 		facebookID	= this.data["facebookID"] as? String ?? ""
 		googleID	= this.data["googleID"] as? String ?? ""
+        linkedInID	= this.data["linkedInID"] as? String ?? ""
 		firstname	= this.data["firstname"] as? String ?? ""
 		lastname	= this.data["lastname"] as? String ?? ""
 		email		= this.data["email"] as? String ?? ""
+        _xmpp_un = this.data["xmpp_un"] as? String ?? ""
+        _xmpp_pw = this.data["xmpp_pw"] as? String ?? ""
 	}
 
 	/// Iterate through rows and set to object data
@@ -88,7 +100,14 @@ open class AuthAccount : MySQLStORM, Account {
 	func get(_ un: String, _ pw: String) throws -> AuthAccount {
 		let cursor = StORMCursor(limit: 1, offset: 0)
 		do {
-			try select(whereclause: "username = ?", params: [un], orderby: [], cursor: cursor)
+            let joins = StORMDataSourceJoin(table: "users",
+                                            onCondition: "people.uniqueID = users.people_uniqueID",
+                                            direction: .INNER)
+            try select(columns: ["people.username", "people.password",
+                                 "users.username as xmpp_un","users.password as xmpp_pw"],
+                       whereclause: "people.username = ?", params: [un], orderby: [], cursor: cursor,
+                       joins: [joins], having: [], groupBy: [])
+            
 			if self.results.rows.count == 0 {
 				throw StORMError.noRecordFound
 			}
@@ -120,5 +139,3 @@ open class AuthAccount : MySQLStORM, Account {
 		}
 	}
 }
-
-

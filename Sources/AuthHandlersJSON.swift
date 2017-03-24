@@ -6,17 +6,24 @@
 //
 //
 
-
 import PerfectLib
 import PerfectHTTP
 import PerfectMustache
 import StORM
+import MySQL
+import MySQLStORM
 import Foundation
 
 import TurnstilePerfect
 import Turnstile
 import TurnstileCrypto
 import TurnstileWeb
+
+#if os(Linux)
+    import SwiftGlibc
+#else
+    import Darwin
+#endif
 
 
 /// public var that houses the Token object
@@ -55,6 +62,12 @@ public class AuthHandlersJSON {
 			resp["error"] = "none"
 			resp["login"] = "ok"
 			resp["token"] = token
+            
+            if let authAccount = request.user.authDetails?.account as? AuthAccount {
+                resp["xmpp_un"] = authAccount._xmpp_un
+                resp["xmpp_pw"] = authAccount._xmpp_pw
+            }
+            
 		} catch {
 			resp["error"] = "Invalid username or password"
 		}
@@ -94,17 +107,62 @@ public class AuthHandlersJSON {
 
 		do {
 			try request.user.register(credentials: credentials)
+            
+            // if the registeration is good, register for the xmpp as well
+            if let authAccount = request.user.authDetails?.account as? AuthAccount {
+                
+                // now register for the xmpp server using ejablibswiftCore.soberdctl
+                let res = try runProc(cmd: "ejabberdctl", args: ["register",username, "localhost", password])
+                Log.info(message: "Ejabberdctl result:\(res)")
+                
+                // using the returned data, update the just created ejabberd user with
+                // foreign key of people_uniqueID
 
+                let server = MySQL()
+                let conn =  server.connect(host: MySQLConnector.host , user: MySQLConnector.username, password: MySQLConnector.password, db: MySQLConnector.database, port: UInt32(MySQLConnector.port))
+                
+                if conn {
+                    
+                    let sql = "UPDATE users SET people_uniqueID = '\(authAccount.uniqueID)' WHERE username = '\(authAccount.username)'"
+                    if server.query(statement: sql) {
+                        Log.info(message: "Successfull update")
+                    } else {
+                        Log.warning(message: "Update issue")
+                    }
+                    
+                    defer { server.close() }
+                    
+                } else {
+                    Log.warning(message: "Issue with opening:\(server.errorMessage())")
+                }
+            }
+            
+            // login as you go and send the user the info
 			try request.user.login(credentials: credentials)
+            
 			//register
 			resp["error"] = "none"
 			resp["login"] = "ok"
 			resp["token"] = response.request.user.authDetails?.sessionID
+            
+            if let authAccount = request.user.authDetails?.account as? AuthAccount {
+                resp["xmpp_un"] = authAccount._xmpp_un
+                resp["xmpp_pw"] = authAccount._xmpp_pw
+            }
+            
 		} catch let e as TurnstileError {
 			resp["error"] = e.description
-		} catch {
-			resp["error"] = "An unknown error occurred."
-		}
+        } catch let e as PerfectError {
+            if case .systemError(let (_,text)) = e {
+                Log.debug(message: text)
+                resp["error"] = text
+            }
+            resp["error"] = "An unknown error occurred. \(e.localizedDescription)"
+		} catch let e {
+            Log.debug(message: e.localizedDescription)
+            resp["error"] = e.localizedDescription
+        }
+        
 		do {
 			try response.setBody(json: resp)
 		} catch {
@@ -127,6 +185,13 @@ public class AuthHandlersJSON {
 		response.setHeader(.contentType, value: "application/json")
 		var resp = [String: String]()
 
+        // Destroy the token and clean the token store
+        if let headerValue = request.header(HTTPRequestHeader.Name.authorization) {
+            if let res = tokenStore?.destroy(headerValue), !res {
+                Log.warning(message: "Couldn't delete token from the store")
+            }
+        }
+        
 		request.user.logout()
 		resp["error"] = "none"
 		resp["logout"] = "complete"
@@ -258,5 +323,33 @@ public class AuthHandlersJSON {
 		}
 		response.completed()
 	}
+    
+    private static func runProc(cmd: String, args: [String], read: Bool = false) throws -> String? {
+        let envs = [("PATH", "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin")]
+        let proc = try SysProcess(cmd, args: args, env: envs)
+        var ret: String?
+        if read {
+            var ary = [UInt8]()
+            while true {
+                do {
+                    guard let s = try proc.stdout?.readSomeBytes(count: 1024), s.count > 0 else {
+                        break
+                    }
+                    ary.append(contentsOf: s)
+                } catch PerfectLib.PerfectError.fileError(let code, _) {
+                    if code != EINTR {
+                        break
+                    }
+                }
+            }
+            ret = UTF8Encoding.encode(bytes: ary)
+        }
+        let res = try proc.wait(hang: true)
+        if res != 0 {
+            let s = try proc.stderr?.readString()
+            throw  PerfectError.systemError(Int32(res), s!)
+        }
+        return ret
+    }
 
 }
