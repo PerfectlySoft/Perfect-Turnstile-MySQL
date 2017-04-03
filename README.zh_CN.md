@@ -1,4 +1,4 @@
-# Perfect Turnstile 与 PostgreSQL 集成用户身份验证[English](README.md)
+# Perfect Turnstile 与 MySQL 集成用户身份验证[English](README.md)
 
 <p align="center">
     <a href="http://perfect.org/get-involved.html" target="_blank">
@@ -48,8 +48,8 @@
 
 ``` swift
 .Package(
-	url: "https://github.com/PerfectlySoft/Perfect-Turnstile-PostgreSQL.git",
-	majorVersion: 0, minor: 0
+	url: "https://github.com/PerfectlySoft/Perfect-Turnstile-MySQL.git",
+	majorVersion: 0
 	)
 ```
 
